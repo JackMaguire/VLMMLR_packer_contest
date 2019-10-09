@@ -35,9 +35,9 @@ num_input_values = (window_size * channels) + extra_values
 
 # Layers
 input = Input(shape=(num_input_values,), name="in", dtype="float32" )
-dense1 = Dense( name="dense1", units=100, activation="relu" )( input )
-dense2 = Dense( name="dense2", units=100, activation="relu" )( dense1 )
-dense3 = Dense( name="dense3", units=100, activation="relu" )( dense2 )
+dense1 = Dense( name="dense1", units=80, activation="relu" )( input )
+dense2 = Dense( name="dense2", units=70, activation="relu" )( dense1 )
+dense3 = Dense( name="dense3", units=50, activation="relu" )( dense2 )
 output = Dense( name="output", units=1, activation='sigmoid' )( dense3 ) # final value is between 0 and 1
 
 model = Model(inputs=input, outputs=output )
@@ -81,7 +81,11 @@ def read_from_file( filename ):
     #exit( 0 )
     return inp,out
 
-input,output = read_from_file( "data/training_data.100000.csv" )
+if False:
+    input,output = read_from_file( "data/training_data.100000.csv" )
+else:
+    input,output = read_from_file( "data/training_data.1000000.csv" )
+
 test_input,test_output = read_from_file( "data/validation_data.10000.csv" )
 
 #############

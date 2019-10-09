@@ -122,7 +122,14 @@ for x in range( 0, 16 ):
             golden_cutoff = predictions[i]
     true_pos,true_neg,false_pos,false_neg = measure_cutoff( predictions, output, golden_cutoff )
     print( x, golden_cutoff, true_pos, true_neg, false_pos, false_neg, (true_neg/(0.0+true_pos+true_neg+false_pos+false_neg)))
+
+    mod = golden_cutoff + 0.05
+    true_pos,true_neg,false_pos,false_neg = measure_cutoff( predictions, output, mod )
+    print( x, mod, true_pos, true_neg, false_pos, false_neg, (true_neg/(0.0+true_pos+true_neg+false_pos+false_neg)))
     
+    mod = golden_cutoff * 1.25
+    true_pos,true_neg,false_pos,false_neg = measure_cutoff( predictions, output, mod )
+    print( x, mod, true_pos, true_neg, false_pos, false_neg, (true_neg/(0.0+true_pos+true_neg+false_pos+false_neg)))
 
 #############
 # SPIN DOWN #
