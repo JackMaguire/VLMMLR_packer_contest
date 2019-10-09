@@ -3,9 +3,7 @@ import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.layers import Input
+from tensorflow.keras.models import load_model
 from tensorflow.keras import metrics
 from tensorflow.keras import optimizers
 
@@ -33,19 +31,7 @@ num_input_values = (window_size * channels) + extra_values
 # CREATE MODEL #
 ################
 
-# Layers
-input = Input(shape=(num_input_values,), name="in", dtype="float32" )
-dense1 = Dense( name="dense1", units=100, activation="relu" )( input )
-dense2 = Dense( name="dense2", units=100, activation="relu" )( dense1 )
-dense3 = Dense( name="dense3", units=100, activation="relu" )( dense2 )
-output = Dense( name="output", units=1, activation='sigmoid' )( dense3 ) # final value is between 0 and 1
-
-model = Model(inputs=input, outputs=output )
-
-metrics_to_output=[ 'binary_accuracy' ]
-model.compile( loss='binary_crossentropy', optimizer='adam', metrics=metrics_to_output )
-model.summary()
-
+model = load_model( "model.h5" )
 
 #############
 # LOAD DATA #
@@ -81,16 +67,15 @@ def read_from_file( filename ):
     #exit( 0 )
     return inp,out
 
-input,output = read_from_file( "data/training_data.100000.csv" )
-test_input,test_output = read_from_file( "data/validation_data.10000.csv" )
+input,output = read_from_file( "data/final_test_data.csv" )
 
 #############
 # CALLBACKS #
 #############
 
-csv_logger = tensorflow.keras.callbacks.CSVLogger( "training_log.csv", separator=',', append=False )
+#csv_logger = tensorflow.keras.callbacks.CSVLogger( "training_log.csv", separator=',', append=False )
 # Many fun options: https://keras.io/callbacks/
-callbacks=[csv_logger]
+#callbacks=[csv_logger]
 
 #########
 # TRAIN #
@@ -99,7 +84,7 @@ callbacks=[csv_logger]
 class_weight = {0: 1.,
                 1: 20.}
 
-model.fit( x=input, y=output, batch_size=32, epochs=10, verbose=1, callbacks=callbacks, validation_data=(test_input,test_output), shuffle=True, class_weight=class_weight )
+model.evaluate( x=input, y=output, batch_size=32, class_weight=class_weight )
 
 
 #############
