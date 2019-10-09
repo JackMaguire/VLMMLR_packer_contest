@@ -78,6 +78,25 @@ def read_from_file( filename, x ):
 # TRAIN #
 #########
 
+def measure_cutoff( predictions, output, cutoff ):
+    true_pos = 0
+    true_neg = 0
+    false_pos = 0
+    false_neg = 0
+    
+    for i in range( 0, len( predictions ) ):
+        if predictions[i] < cutoff: #predict negative
+            if output[i] == 0: # true negative
+                true_neg += 1
+            else:
+                false_neg += 1
+        else: #predict positive
+            if output[i] == 0: # false positive
+                false_pos += 1
+            else:
+                true_pos += 1
+    return true_pos,true_neg,false_pos,false_neg
+
 class_weight = {0: 1.,
                 1: 20.}
 
@@ -88,28 +107,21 @@ for x in range( 0, 16 ):
     model.evaluate( x=input, y=output, batch_size=32 )
 
     predictions = model.predict( x=input )
+
+
     cutoff = 0.5
     print( "x, cutoff, true_pos, true_neg, false_pos, false_neg" )
     while cutoff > 0.09:
-        true_pos = 0
-        true_neg = 0
-        false_pos = 0
-        false_neg = 0
-        
-        for i in range( 0, len( predictions ) ):
-            if predictions[i] < cutoff: #predict negative
-                if output[i] == 0: # true negative
-                    true_neg += 1
-                else:
-                    false_neg += 1
-            else: #predict positive
-                if output[i] == 0: # false positive
-                    false_pos += 1
-                else:
-                    true_pos += 1
-
+        true_pos,true_neg,false_pos,false_neg = measure_cutoff( predictions, output, cutoff )
         print( x, '{:02.1f}'.format(cutoff), true_pos, true_neg, false_pos, false_neg )
         cutoff -= 0.1
+
+    golden_cutoff = 1.0
+    for i in range( 0, len( predictions ) ):
+        if output[i] == 1 and predictions[i] < golden_cutoff:
+            golden_cutoff = predictions[i]
+    true_pos,true_neg,false_pos,false_neg = measure_cutoff( predictions, output, golden_cutoff )
+    print( x, golden_cutoff, true_pos, true_neg, false_pos, false_neg, (true_neg/(0.0+true_pos+true_neg+false_pos+false_neg)))
     
 
 #############
