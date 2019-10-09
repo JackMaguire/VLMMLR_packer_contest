@@ -99,7 +99,7 @@ callbacks=[csv_logger]
 class_weight = {0: 1.,
                 1: 20.}
 
-model.fit( x=input, y=output, batch_size=32, epochs=10, verbose=1, callbacks=callbacks, validation_data=(test_input,test_output), shuffle=True, class_weight=class_weight )
+model.fit( x=input, y=output, batch_size=64, epochs=1, verbose=1, callbacks=callbacks, validation_data=(test_input,test_output), shuffle=True, class_weight=class_weight )
 
 
 #############
