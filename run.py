@@ -60,8 +60,8 @@ def read_from_file( filename ):
     return input_data, output
 
 #input,output = read_from_file( "data/training_data.first_block.100000.csv" )
-#input,output = read_from_file( "data/training_data.first_block.500000.csv" )
-input,output = read_from_file( "big_data/training_data.first_block.all.csv" )
+input,output = read_from_file( "data/training_data.first_block.500000.csv" )
+
 test_input,test_output = read_from_file( "data/validation_data.first_block.100000.csv" )
 
 #############
@@ -77,9 +77,9 @@ callbacks=[csv_logger]
 #########
 
 class_weight = {0: 1.,
-                1: 20.}
+                1: 200.}
 
-model.fit( x=input, y=output, batch_size=64, epochs=1, verbose=1, callbacks=callbacks, validation_data=(test_input,test_output), shuffle=True, class_weight=class_weight )
+model.fit( x=input, y=output, batch_size=64, epochs=10, verbose=1, callbacks=callbacks, validation_data=(test_input,test_output), shuffle=True, class_weight=class_weight )
 
 
 #############

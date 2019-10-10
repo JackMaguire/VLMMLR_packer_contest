@@ -84,26 +84,28 @@ model.evaluate( x=input, y=output, batch_size=32 )
 predictions = model.predict( x=input )
 
 cutoff = 0.5
-print( "cutoff, true_pos, true_neg, false_pos, false_neg" )
-while cutoff > 0.09:
+print( "cutoff, true_pos, true_neg, false_pos, false_neg, fraction of work prevented, fraction of good AAs lost" )
+while cutoff > 0.02:
     true_pos,true_neg,false_pos,false_neg = measure_cutoff( predictions, output, cutoff )
-    print( '{:02.1f}'.format(cutoff), true_pos, true_neg, false_pos, false_neg, (true_neg/(0.0+true_pos+true_neg+false_pos+false_neg)) )
-    cutoff -= 0.1
+    print( '{:02.2f}'.format(cutoff), true_pos, true_neg, false_pos, false_neg, 0.75*((true_neg+false_neg)/(0.0+true_pos+true_neg+false_pos+false_neg)), (false_neg / (0.0+true_pos+false_neg)) )
+    cutoff -= 0.05
 
+'''
 golden_cutoff = 1.0
 for i in range( 0, len( predictions ) ):
     if output[i] == 1 and predictions[i] < golden_cutoff:
         golden_cutoff = predictions[i]
 true_pos,true_neg,false_pos,false_neg = measure_cutoff( predictions, output, golden_cutoff )
-print( golden_cutoff, true_pos, true_neg, false_pos, false_neg, (true_neg/(0.0+true_pos+true_neg+false_pos+false_neg)))
+print( golden_cutoff, true_pos, true_neg, false_pos, false_neg, 0.75*((true_neg+false_neg)/(0.0+true_pos+true_neg+false_pos+false_neg)), (false_neg / (0.0+true_pos+false_neg)) )
 
 mod = golden_cutoff + 0.05
 true_pos,true_neg,false_pos,false_neg = measure_cutoff( predictions, output, mod )
-print( mod, true_pos, true_neg, false_pos, false_neg, (true_neg/(0.0+true_pos+true_neg+false_pos+false_neg)))
+print( mod, true_pos, true_neg, false_pos, false_neg, 0.75*((true_neg+false_neg)/(0.0+true_pos+true_neg+false_pos+false_neg)), (false_neg / (0.0+true_pos+false_neg)) )
 
 mod = golden_cutoff * 1.25
 true_pos,true_neg,false_pos,false_neg = measure_cutoff( predictions, output, mod )
-print( mod, true_pos, true_neg, false_pos, false_neg, (true_neg/(0.0+true_pos+true_neg+false_pos+false_neg)))
+print( mod, true_pos, true_neg, false_pos, false_neg, 0.75*((true_neg+false_neg)/(0.0+true_pos+true_neg+false_pos+false_neg)), (false_neg / (0.0+true_pos+false_neg)) )
+'''
 
 #############
 # SPIN DOWN #
