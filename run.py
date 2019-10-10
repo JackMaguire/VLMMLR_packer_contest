@@ -23,9 +23,9 @@ numpy.random.seed( 0 )
 ##############
 
 window_size = 5 # consider 5 loops of data (columns) at once
-channels = 4 # temp + 3 rates
+channels = 3 # temp + 3 rates
 
-extra_values = 1 # number of loops remainint
+extra_values = 0 # number of loops remainint
 
 num_input_values = (window_size * channels) + extra_values
 
@@ -51,35 +51,12 @@ model.summary()
 # LOAD DATA #
 #############
 
-def read_from_file_raw( filename ):
+def read_from_file( filename ):
     data = pd.read_csv( filename, header=None ).values
     amino_acids = data[:,0:1]
-    input_data = data[:,1:81]
+    input_data = data[:,1:21]
     output = data[:,81:82]
     return input_data, output
-
-def read_from_file( filename ):
-    input_data,output=read_from_file_raw( filename )
-    inp = []
-    out = []
-    for i in range( 0, len( input_data ) ):
-        ncol = int( len( input_data[i] ) / channels )
-        number_of_columns_to_measure = ncol - window_size #exclude final window, why would we care about that?
-        for j in range( 0, number_of_columns_to_measure ):
-            row_data = []
-            starting_element = j * channels
-            for k in range( 0, window_size * channels ):
-                row_data.append( input_data[ i ][ starting_element + k ] )
-            number_of_cols_remaining = number_of_columns_to_measure - j
-            row_data.append( number_of_cols_remaining )
-            inp.append( row_data )
-            out.append( output[ i ] )
-    print( len(inp), len(out) )
-    inp=numpy.asarray( inp )
-    out=numpy.asarray( out )
-    print( inp.shape, input_data.shape )
-    #exit( 0 )
-    return inp,out
 
 input,output = read_from_file( "data/training_data.100000.csv" )
 test_input,test_output = read_from_file( "data/validation_data.10000.csv" )
