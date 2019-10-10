@@ -23,9 +23,9 @@ numpy.random.seed( 0 )
 ##############
 
 window_size = 5 # consider 5 loops of data (columns) at once
-channels = 4 # temp + 3 rates
+channels = 3
 
-extra_values = 1 # number of loops remainint
+extra_values = 0
 
 num_input_values = (window_size * channels) + extra_values
 
@@ -35,9 +35,9 @@ num_input_values = (window_size * channels) + extra_values
 
 # Layers
 input = Input(shape=(num_input_values,), name="in", dtype="float32" )
-dense1 = Dense( name="dense1", units=80, activation="relu" )( input )
-dense2 = Dense( name="dense2", units=70, activation="relu" )( dense1 )
-dense3 = Dense( name="dense3", units=50, activation="relu" )( dense2 )
+dense1 = Dense( name="dense1", units=100, activation="relu" )( input )
+dense2 = Dense( name="dense2", units=100, activation="relu" )( dense1 )
+dense3 = Dense( name="dense3", units=100, activation="relu" )( dense2 )
 output = Dense( name="output", units=1, activation='sigmoid' )( dense3 ) # final value is between 0 and 1
 
 model = Model(inputs=input, outputs=output )
@@ -51,42 +51,18 @@ model.summary()
 # LOAD DATA #
 #############
 
-def read_from_file_raw( filename ):
+def read_from_file( filename ):
     data = pd.read_csv( filename, header=None ).values
     amino_acids = data[:,0:1]
-    input_data = data[:,1:81]
-    output = data[:,81:82]
+    input_data = data[:,1:16]
+    output = data[:,16:17]
+    print( output )
     return input_data, output
 
-def read_from_file( filename ):
-    input_data,output=read_from_file_raw( filename )
-    inp = []
-    out = []
-    for i in range( 0, len( input_data ) ):
-        ncol = int( len( input_data[i] ) / channels )
-        number_of_columns_to_measure = ncol - window_size #exclude final window, why would we care about that?
-        for j in range( 0, number_of_columns_to_measure ):
-            row_data = []
-            starting_element = j * channels
-            for k in range( 0, window_size * channels ):
-                row_data.append( input_data[ i ][ starting_element + k ] )
-            number_of_cols_remaining = number_of_columns_to_measure - j
-            row_data.append( number_of_cols_remaining )
-            inp.append( row_data )
-            out.append( output[ i ] )
-    print( len(inp), len(out) )
-    inp=numpy.asarray( inp )
-    out=numpy.asarray( out )
-    print( inp.shape, input_data.shape )
-    #exit( 0 )
-    return inp,out
-
-if False:
-    input,output = read_from_file( "data/training_data.100000.csv" )
-else:
-    input,output = read_from_file( "data/training_data.1000000.csv" )
-
-test_input,test_output = read_from_file( "data/validation_data.10000.csv" )
+#input,output = read_from_file( "data/training_data.first_block.100000.csv" )
+#input,output = read_from_file( "data/training_data.first_block.500000.csv" )
+input,output = read_from_file( "big_data/training_data.first_block.all.csv" )
+test_input,test_output = read_from_file( "data/validation_data.first_block.100000.csv" )
 
 #############
 # CALLBACKS #
@@ -95,8 +71,11 @@ test_input,test_output = read_from_file( "data/validation_data.10000.csv" )
 csv_logger = tensorflow.keras.callbacks.CSVLogger( "training_log.jack.csv", separator=',', append=False )
 
 def schedule( epoch, lr ):
+    if lr < 0.0001:
+        return lr * 2
     return lr * 0.9
 lrs = tensorflow.keras.callbacks.LearningRateScheduler(schedule, verbose=0)
+
 # Many fun options: https://keras.io/callbacks/
 callbacks=[csv_logger,lrs]
 
@@ -107,7 +86,7 @@ callbacks=[csv_logger,lrs]
 class_weight = {0: 1.,
                 1: 200.}
 
-model.fit( x=input, y=output, batch_size=128, epochs=10, verbose=1, callbacks=callbacks, validation_data=(test_input,test_output), shuffle=True, class_weight=class_weight )
+model.fit( x=input, y=output, batch_size=64, epochs=10, verbose=1, callbacks=callbacks, validation_data=(test_input,test_output), shuffle=True, class_weight=class_weight )
 
 
 #############
