@@ -58,7 +58,7 @@ def read_from_file( filename ):
     output = data[:,81:82]
     return input_data, output
 
-input,output = read_from_file( "data/training_data.100000.csv" )
+input,output = read_from_file( "data/training_data.first_block.500000.csv" )
 test_input,test_output = read_from_file( "data/validation_data.10000.csv" )
 
 #############
