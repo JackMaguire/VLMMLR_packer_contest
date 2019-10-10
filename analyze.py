@@ -21,9 +21,9 @@ numpy.random.seed( 0 )
 ##############
 
 window_size = 5 # consider 5 loops of data (columns) at once
-channels = 4 # temp + 3 rates
+channels = 3
 
-extra_values = 1 # number of loops remainint
+extra_values = 0
 
 num_input_values = (window_size * channels) + extra_values
 
@@ -36,35 +36,13 @@ model = load_model( "model.h5" )
 #############
 # LOAD DATA #
 #############
-
-def read_from_file_raw( filename ):
+def read_from_file( filename ):
     data = pd.read_csv( filename, header=None ).values
     amino_acids = data[:,0:1]
-    input_data = data[:,1:81]
-    output = data[:,81:82]
+    input_data = data[:,1:16]
+    output = data[:,16:17]
+    print( output )
     return input_data, output
-
-def read_from_file( filename, x ):
-    input_data,output=read_from_file_raw( filename )
-    inp = []
-    out = []
-    for i in range( 0, len( input_data ) ):
-        ncol = int( len( input_data[i] ) / channels )
-        number_of_columns_to_measure = ncol - window_size #exclude final window, why would we care about that?
-        for j in range( 0, number_of_columns_to_measure ):
-            number_of_cols_remaining = number_of_columns_to_measure - j
-            if number_of_cols_remaining != x:
-                continue
-            row_data = []
-            starting_element = j * channels
-            for k in range( 0, window_size * channels ):
-                row_data.append( input_data[ i ][ starting_element + k ] )
-            row_data.append( number_of_cols_remaining )
-            inp.append( row_data )
-            out.append( output[ i ] )
-    inp=numpy.asarray( inp )
-    out=numpy.asarray( out )
-    return inp,out
 
 #############
 # CALLBACKS #
@@ -100,36 +78,32 @@ def measure_cutoff( predictions, output, cutoff ):
 class_weight = {0: 1.,
                 1: 20.}
 
-for x in range( 0, 16 ):
-    input,output = read_from_file( "data/final_test_data.csv", x )
-    if len(input) == 0:
-        continue
-    model.evaluate( x=input, y=output, batch_size=32 )
+input,output = read_from_file( "data/final_test_data.first_block.500000.csv" )
+model.evaluate( x=input, y=output, batch_size=32 )
 
-    predictions = model.predict( x=input )
+predictions = model.predict( x=input )
 
+cutoff = 0.5
+print( "cutoff, true_pos, true_neg, false_pos, false_neg" )
+while cutoff > 0.09:
+    true_pos,true_neg,false_pos,false_neg = measure_cutoff( predictions, output, cutoff )
+    print( '{:02.1f}'.format(cutoff), true_pos, true_neg, false_pos, false_neg, (true_neg/(0.0+true_pos+true_neg+false_pos+false_neg)) )
+    cutoff -= 0.1
 
-    cutoff = 0.5
-    print( "x, cutoff, true_pos, true_neg, false_pos, false_neg" )
-    while cutoff > 0.09:
-        true_pos,true_neg,false_pos,false_neg = measure_cutoff( predictions, output, cutoff )
-        print( x, '{:02.1f}'.format(cutoff), true_pos, true_neg, false_pos, false_neg )
-        cutoff -= 0.1
+golden_cutoff = 1.0
+for i in range( 0, len( predictions ) ):
+    if output[i] == 1 and predictions[i] < golden_cutoff:
+        golden_cutoff = predictions[i]
+true_pos,true_neg,false_pos,false_neg = measure_cutoff( predictions, output, golden_cutoff )
+print( golden_cutoff, true_pos, true_neg, false_pos, false_neg, (true_neg/(0.0+true_pos+true_neg+false_pos+false_neg)))
 
-    golden_cutoff = 1.0
-    for i in range( 0, len( predictions ) ):
-        if output[i] == 1 and predictions[i] < golden_cutoff:
-            golden_cutoff = predictions[i]
-    true_pos,true_neg,false_pos,false_neg = measure_cutoff( predictions, output, golden_cutoff )
-    print( x, golden_cutoff, true_pos, true_neg, false_pos, false_neg, (true_neg/(0.0+true_pos+true_neg+false_pos+false_neg)))
+mod = golden_cutoff + 0.05
+true_pos,true_neg,false_pos,false_neg = measure_cutoff( predictions, output, mod )
+print( mod, true_pos, true_neg, false_pos, false_neg, (true_neg/(0.0+true_pos+true_neg+false_pos+false_neg)))
 
-    mod = golden_cutoff + 0.05
-    true_pos,true_neg,false_pos,false_neg = measure_cutoff( predictions, output, mod )
-    print( x, mod, true_pos, true_neg, false_pos, false_neg, (true_neg/(0.0+true_pos+true_neg+false_pos+false_neg)))
-    
-    mod = golden_cutoff * 1.25
-    true_pos,true_neg,false_pos,false_neg = measure_cutoff( predictions, output, mod )
-    print( x, mod, true_pos, true_neg, false_pos, false_neg, (true_neg/(0.0+true_pos+true_neg+false_pos+false_neg)))
+mod = golden_cutoff * 1.25
+true_pos,true_neg,false_pos,false_neg = measure_cutoff( predictions, output, mod )
+print( mod, true_pos, true_neg, false_pos, false_neg, (true_neg/(0.0+true_pos+true_neg+false_pos+false_neg)))
 
 #############
 # SPIN DOWN #

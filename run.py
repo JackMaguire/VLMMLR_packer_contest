@@ -23,9 +23,9 @@ numpy.random.seed( 0 )
 ##############
 
 window_size = 5 # consider 5 loops of data (columns) at once
-channels = 3 # temp + 3 rates
+channels = 3
 
-extra_values = 0 # number of loops remainint
+extra_values = 0
 
 num_input_values = (window_size * channels) + extra_values
 
@@ -54,12 +54,15 @@ model.summary()
 def read_from_file( filename ):
     data = pd.read_csv( filename, header=None ).values
     amino_acids = data[:,0:1]
-    input_data = data[:,1:21]
-    output = data[:,81:82]
+    input_data = data[:,1:16]
+    output = data[:,16:17]
+    print( output )
     return input_data, output
 
-input,output = read_from_file( "data/training_data.first_block.500000.csv" )
-test_input,test_output = read_from_file( "data/validation_data.10000.csv" )
+#input,output = read_from_file( "data/training_data.first_block.100000.csv" )
+#input,output = read_from_file( "data/training_data.first_block.500000.csv" )
+input,output = read_from_file( "big_data/training_data.first_block.all.csv" )
+test_input,test_output = read_from_file( "data/validation_data.first_block.100000.csv" )
 
 #############
 # CALLBACKS #
