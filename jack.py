@@ -56,7 +56,7 @@ def read_from_file( filename ):
     amino_acids = data[:,0:1]
     input_data = data[:,1:16]
     output = data[:,16:17]
-    print( output )
+    #You can optionally return amino_acids
     return input_data, output
 
 #input,output = read_from_file( "data/training_data.first_block.100000.csv" )
