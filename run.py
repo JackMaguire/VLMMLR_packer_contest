@@ -15,10 +15,20 @@ import tensorflow.keras
 
 import numpy
 import pandas as pd
+import argparse
 
 from read_vlmmlr_data import *
 
 numpy.random.seed( 0 )
+
+#############
+# ARGUMENTS #
+#############
+parser = argparse.ArgumentParser()
+parser.add_argument( "--model", help="filename for output file", default="model.h5", required=False )
+parser.add_argument( "--training_data", help="csv file to train from", default="data/training_data.first_block.100000.csv", required=False )
+args = parser.parse_args()
+
 
 ##############
 # PARAMETERS #
@@ -53,8 +63,7 @@ model.summary()
 #############
 # LOAD DATA #
 #############
-#input,output = read_from_file( "data/training_data.first_block.100000.csv" )
-input,output = read_from_file( "data/training_data.first_block.500000.csv" )
+input,output = read_from_file( args.training_data )
 
 test_input,test_output = read_from_file( "data/validation_data.first_block.100000.csv" )
 
@@ -82,4 +91,4 @@ model.fit( x=input, y=output, batch_size=64, epochs=10, verbose=1, callbacks=cal
 # SPIN DOWN #
 #############
 
-model.save( "model.h5" )
+model.save( args.model )
