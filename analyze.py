@@ -53,8 +53,8 @@ def measure_cutoff( predictions, output, cutoff ):
                 true_pos += 1
     return true_pos,true_neg,false_pos,false_neg
 
-input,output = read_from_file( "data/final_test_data.first_block.500000.csv" )
-model.evaluate( x=input, y=output, batch_size=32 )
+input, aa_in, output = read_from_file( "data/final_test_data.first_block.500000.csv" )
+model.evaluate( x=[input,aa_in], y=output, batch_size=32 )
 
 predictions = model.predict( x=input )
 

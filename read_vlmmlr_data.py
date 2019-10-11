@@ -34,8 +34,7 @@ def create_one_hot_input( raw_input, amino_acids ):#DIFF
         values[ index ] = 1.0
         aa_input.append( values )
     aa_input_array = numpy.asarray( aa_input )
-    result = numpy.append( raw_input, aa_input_array, axis=1 )
-    return result
+    return aa_input_array
 
 #normal version:
 '''
@@ -53,4 +52,4 @@ def read_from_file( filename ):
     amino_acids = data[:,0:1]
     input_data = data[:,1:16]
     output = data[:,16:17]
-    return create_one_hot_input( input_data, amino_acids ), output
+    return input_data, create_one_hot_input( input_data, amino_acids ), output
