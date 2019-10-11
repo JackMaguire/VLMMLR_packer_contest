@@ -56,7 +56,7 @@ def measure_cutoff( predictions, output, cutoff ):
 input, aa_in, output = read_from_file( "data/final_test_data.first_block.500000.csv" )
 model.evaluate( x=[input,aa_in], y=output, batch_size=32 )
 
-predictions = model.predict( x=input )
+predictions = model.predict( x=[input,aa_in] )
 
 cutoff = 0.75
 print( "cutoff, true_pos, true_neg, false_pos, false_neg, fraction of work prevented, fraction of good AAs lost" )
