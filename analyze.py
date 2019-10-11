@@ -27,7 +27,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument( "--model", help="filename for model", default="model.h5", required=False )
 args = parser.parse_args()
 
-model = load_model( args.parse )
+model = load_model( args.model )
 
 
 #########
