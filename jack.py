@@ -78,6 +78,7 @@ def schedule( epoch, lr ):
     if lr < 0.0001:
         return lr * 2
     return lr * 0.9
+lrs = tensorflow.keras.callbacks.LearningRateScheduler(schedule, verbose=0)
 
 chkpt = tensorflow.keras.callbacks.ModelCheckpoint("checkpoint.{epoch:02d}.h5", monitor='val_loss', verbose=0, save_best_only=False, save_weights_only=False, mode='auto', period=1)
 
@@ -91,7 +92,7 @@ callbacks=[csv_logger,lrs,chkpt]
 class_weight = {0: 1.,
                 1: 200.}
 
-model.fit( x=input, y=output, batch_size=64, epochs=100, verbose=1, callbacks=callbacks, validation_data=(test_input,test_output), shuffle=True, class_weight=class_weight )
+model.fit( x=input, y=output, batch_size=64, epochs=10, verbose=1, callbacks=callbacks, validation_data=(test_input,test_output), shuffle=True, class_weight=class_weight )
 
 
 #############

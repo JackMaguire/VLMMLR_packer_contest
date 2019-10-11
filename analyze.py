@@ -13,6 +13,7 @@ import tensorflow.keras
 
 import numpy
 import pandas as pd
+import argparse
 
 from read_vlmmlr_data import *
 
@@ -21,6 +22,10 @@ numpy.random.seed( 0 )
 ################
 # CREATE MODEL #
 ################
+
+parser = argparse.ArgumentParser()
+parser.add_argument( "--model", help="filename for model", default="model.h5", required=False )
+args = parser.parse_args()
 
 model = load_model( "model.h5" )
 
