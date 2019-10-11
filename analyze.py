@@ -14,18 +14,9 @@ import tensorflow.keras
 import numpy
 import pandas as pd
 
+from read_vlmmlr_data import *
+
 numpy.random.seed( 0 )
-
-##############
-# PARAMETERS #
-##############
-
-window_size = 5 # consider 5 loops of data (columns) at once
-channels = 3
-
-extra_values = 0
-
-num_input_values = (window_size * channels) + extra_values
 
 ################
 # CREATE MODEL #
@@ -33,24 +24,6 @@ num_input_values = (window_size * channels) + extra_values
 
 model = load_model( "model.h5" )
 
-#############
-# LOAD DATA #
-#############
-def read_from_file( filename ):
-    data = pd.read_csv( filename, header=None ).values
-    amino_acids = data[:,0:1]
-    input_data = data[:,1:16]
-    output = data[:,16:17]
-    print( output )
-    return input_data, output
-
-#############
-# CALLBACKS #
-#############
-
-#csv_logger = tensorflow.keras.callbacks.CSVLogger( "training_log.csv", separator=',', append=False )
-# Many fun options: https://keras.io/callbacks/
-#callbacks=[csv_logger]
 
 #########
 # TRAIN #
