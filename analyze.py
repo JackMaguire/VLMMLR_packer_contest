@@ -53,15 +53,12 @@ def measure_cutoff( predictions, output, cutoff ):
                 true_pos += 1
     return true_pos,true_neg,false_pos,false_neg
 
-class_weight = {0: 1.,
-                1: 20.}
-
 input,output = read_from_file( "data/final_test_data.first_block.500000.csv" )
 model.evaluate( x=input, y=output, batch_size=32 )
 
 predictions = model.predict( x=input )
 
-cutoff = 0.5
+cutoff = 0.75
 print( "cutoff, true_pos, true_neg, false_pos, false_neg, fraction of work prevented, fraction of good AAs lost" )
 while cutoff > 0.02:
     true_pos,true_neg,false_pos,false_neg = measure_cutoff( predictions, output, cutoff )
