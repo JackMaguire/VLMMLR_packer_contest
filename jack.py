@@ -15,8 +15,20 @@ import tensorflow.keras
 
 import numpy
 import pandas as pd
+import argparse
+
+from read_vlmmlr_data import *
 
 numpy.random.seed( 0 )
+
+#############
+# ARGUMENTS #
+#############
+parser = argparse.ArgumentParser()
+parser.add_argument( "--model", help="filename for output file", default="model.h5", required=False )
+parser.add_argument( "--training_data", help="csv file to train from", default="data/training_data.first_block.100000.csv", required=False )
+args = parser.parse_args()
+
 
 ##############
 # PARAMETERS #
@@ -25,7 +37,8 @@ numpy.random.seed( 0 )
 window_size = 5 # consider 5 loops of data (columns) at once
 channels = 3
 
-extra_values = 0
+#make this 0 if you turn off onehot encoding
+extra_values = 20
 
 num_input_values = (window_size * channels) + extra_values
 
@@ -50,34 +63,26 @@ model.summary()
 #############
 # LOAD DATA #
 #############
+input,output = read_from_file( args.training_data )
 
-def read_from_file( filename ):
-    data = pd.read_csv( filename, header=None ).values
-    amino_acids = data[:,0:1]
-    input_data = data[:,1:16]
-    output = data[:,16:17]
-    #You can optionally return amino_acids
-    return input_data, output
-
-#input,output = read_from_file( "data/training_data.first_block.100000.csv" )
-#input,output = read_from_file( "data/training_data.first_block.500000.csv" )
-input,output = read_from_file( "big_data/training_data.first_block.all.csv" )
 test_input,test_output = read_from_file( "data/validation_data.first_block.100000.csv" )
+
 
 #############
 # CALLBACKS #
 #############
 
-csv_logger = tensorflow.keras.callbacks.CSVLogger( "training_log.jack.csv", separator=',', append=False )
-
+csv_logger = tensorflow.keras.callbacks.CSVLogger( "training_log.csv", separator=',', append=False )
+# Many fun options: https://keras.io/callbacks/
 def schedule( epoch, lr ):
     if lr < 0.0001:
         return lr * 2
     return lr * 0.9
-lrs = tensorflow.keras.callbacks.LearningRateScheduler(schedule, verbose=0)
 
-# Many fun options: https://keras.io/callbacks/
-callbacks=[csv_logger,lrs]
+chkpt = tensorflow.keras.callbacks.ModelCheckpoint("checkpoint.{epoch:02d}.h5", monitor='val_loss', verbose=0, save_best_only=False, save_weights_only=False, mode='auto', period=1)
+
+
+callbacks=[csv_logger,lrs,chkpt]
 
 #########
 # TRAIN #
@@ -86,11 +91,11 @@ callbacks=[csv_logger,lrs]
 class_weight = {0: 1.,
                 1: 200.}
 
-model.fit( x=input, y=output, batch_size=64, epochs=10, verbose=1, callbacks=callbacks, validation_data=(test_input,test_output), shuffle=True, class_weight=class_weight )
+model.fit( x=input, y=output, batch_size=64, epochs=100, verbose=1, callbacks=callbacks, validation_data=(test_input,test_output), shuffle=True, class_weight=class_weight )
 
 
 #############
 # SPIN DOWN #
 #############
 
-model.save( "model.h5" )
+model.save( args.model )
