@@ -38,7 +38,7 @@ window_size = 5 # consider 5 loops of data (columns) at once
 channels = 3
 
 #make this 0 if you turn off onehot encoding
-extra_values = 20
+extra_values = 0
 
 num_input_values = (window_size * channels) + extra_values
 
