@@ -82,7 +82,7 @@ callbacks=[csv_logger]
 #########
 
 class_weight = {0: 1.,
-                1: 200.}
+                1: 19.} #try increasing this
 
 model.fit( x=input, y=output, batch_size=64, epochs=10, verbose=1, callbacks=callbacks, validation_data=(test_input,test_output), shuffle=True, class_weight=class_weight )
 
