@@ -75,7 +75,7 @@ def measure_cutoff( predictions, output, cutoff, aa_in ):
                 true_neg += 1
             else:
                 name1=onehot_to_name1(aa_in[ i ])
-                if name1 == "W" or name1 == "f" or name1 == "G" or name1 == "P" or name1 == "A":
+                if name1 == "W" or name1 == "F" or name1 == "G" or name1 == "P" or name1 == "A":
                     pass
                     #we'll just let these slide
                     #print( onehot_to_name1(aa_in[ i ]), predictions[i] )
