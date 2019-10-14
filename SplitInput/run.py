@@ -70,9 +70,9 @@ model.summary()
 #############
 # LOAD DATA #
 #############
-input,aa_in,output = read_from_file( args.training_data )
+input,aa_in,output = read_from_file_SPLIT( args.training_data )
 
-test_input,test_aa,test_output = read_from_file( "data/validation_data.first_block.100000.csv" )
+test_input,test_aa,test_output = read_from_file_SPLIT( "data/validation_data.first_block.100000.csv" )
 
 
 #############
