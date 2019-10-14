@@ -70,10 +70,14 @@ predictions = model.predict( x=input )
 first_cutoff = determine_cutoff_for_percentile( output, predictions, 0.01 )
 second_cutoff = determine_cutoff_for_percentile( output, predictions, 0.001 )
 
-print( "cutoff, true_pos, true_neg, false_pos, false_neg, fraction of work prevented, fraction of good AAs lost" )
+print( "cutoff, frac work eliminated, frac good AAs lost" )
 true_pos,true_neg,false_pos,false_neg = measure_cutoff( predictions, output, first_cutoff )
-print( '{:02.2f}'.format(first_cutoff), true_pos, true_neg, false_pos, false_neg, 0.75*((true_neg+false_neg)/(0.0+true_pos+true_neg+false_pos+false_neg)), (false_neg / (0.0+true_pos+false_neg)) )
+#print( '{:02.2f}'.format(first_cutoff), true_pos, true_neg, false_pos, false_neg, 0.75*((true_neg+false_neg)/(0.0+true_pos+true_neg+false_pos+false_neg)), (false_neg / (0.0+true_pos+false_neg)) )
+print( first_cutoff[ 0 ], 0.75*((true_neg+false_neg)/(0.0+true_pos+true_neg+false_pos+false_neg)), (false_neg / (0.0+true_pos+false_neg)) )
+
+
 true_pos,true_neg,false_pos,false_neg = measure_cutoff( predictions, output, second_cutoff )
-print( '{:02.2f}'.format(second_cutoff), true_pos, true_neg, false_pos, false_neg, 0.75*((true_neg+false_neg)/(0.0+true_pos+true_neg+false_pos+false_neg)), (false_neg / (0.0+true_pos+false_neg)) )
+print( second_cutoff[ 0 ], 0.75*((true_neg+false_neg)/(0.0+true_pos+true_neg+false_pos+false_neg)), (false_neg / (0.0+true_pos+false_neg)) )
+
 
 
