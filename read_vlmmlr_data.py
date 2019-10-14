@@ -37,6 +37,15 @@ def create_one_hot_input( raw_input, amino_acids ):#DIFF
     result = numpy.append( raw_input, aa_input_array, axis=1 )
     return result
 
+def one_hot_data( raw_input, amino_acids ):#DIFF
+    aa_input = [];
+    for aa in amino_acids:
+        values = numpy.zeros( 20 )
+        index=int(aa_indices[ aa[0] ])
+        values[ index ] = 1.0
+        aa_input.append( values )
+    return numpy.asarray( aa_input )
+
 #normal version:
 def read_from_file_NOAA( filename ):
     data = pd.read_csv( filename, header=None ).values
@@ -59,4 +68,4 @@ def read_from_file_SPLIT( filename ):
     amino_acids = data[:,0:1]
     input_data = data[:,1:16]
     output = data[:,16:17]
-    return input_data, create_one_hot_input( input_data, amino_acids ), output
+    return input_data, one_hot_data( input_data, amino_acids ), output
