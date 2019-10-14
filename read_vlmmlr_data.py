@@ -53,3 +53,10 @@ def read_from_file( filename ):
     input_data = data[:,1:16]
     output = data[:,16:17]
     return create_one_hot_input( input_data, amino_acids ), output
+
+def read_from_file_SPLIT( filename ):
+    data = pd.read_csv( filename, header=None ).values
+    amino_acids = data[:,0:1]
+    input_data = data[:,1:16]
+    output = data[:,16:17]
+    return input_data, create_one_hot_input( input_data, amino_acids ), output
