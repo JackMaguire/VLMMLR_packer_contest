@@ -63,7 +63,33 @@ def onehot_to_name1(aa_in1):
             return aa_indices[ i ]
 
 
+rots_per_aa = {
+    "A" : 1,
+    "G" : 1,
+    "V" : 2,
+    "C" : 54,
+    "D" : 54,
+    "F" : 32,
+    "H" : 180,
+    "I" : 12,
+    "L" : 24,
+    "N" : 84,
+    "S" : 108,
+    "T" : 72,
+    "W" : 59,
+    "E" : 88,
+    "M" : 84,
+    "P" : 5,
+    "Q" : 120,
+    "Y" : 72,
+    "K" : 167,
+    "R" : 191
+}
+
 def measure_cutoff( predictions, output, cutoff, aa_in ):
+    nrot_total = 0
+    nrot_kept = 0
+
     true_pos = 0
     true_neg = 0
     false_pos = 0
@@ -71,8 +97,12 @@ def measure_cutoff( predictions, output, cutoff, aa_in ):
     
     for i in range( 0, len( predictions ) ):
         name1=onehot_to_name1(aa_in[ i ])
+        rots = rots_per_aa[ name1 ]
+        nrot_total = nrot_total + rots
+
         my_cutoff = cutoff
         if name1 == "G" or name1 == "P" or name1 == "A":
+            nrot_kept = nrot_kept + rots
             continue
         if name1 == "W" or name1 == "F":
             my_cutoff = cutoff / 2.0
@@ -89,11 +119,12 @@ def measure_cutoff( predictions, output, cutoff, aa_in ):
                 else:
                     false_neg += 1
         else: #predict positive
+            nrot_kept = nrot_kept + rots
             if output[i] == 0: # false positive
                 false_pos += 1
             else:
                 true_pos += 1
-    return true_pos,true_neg,false_pos,false_neg
+    return true_pos,true_neg,false_pos,false_neg,((0.0+nrot_kept)/nrot_total)
 
 input, aa_in, output = read_from_file( "data/final_test_data.first_block.500000.csv" )
 model.evaluate( x=[input,aa_in], y=output, batch_size=32 )
@@ -103,8 +134,8 @@ predictions = model.predict( x=[input,aa_in] )
 cutoff = 0.75
 print( "cutoff, true_pos, true_neg, false_pos, false_neg, fraction of work prevented, fraction of good AAs lost" )
 while cutoff > 0.02:
-    true_pos,true_neg,false_pos,false_neg = measure_cutoff( predictions, output, cutoff, aa_in )
-    print( '{:02.2f}'.format(cutoff), true_pos, true_neg, false_pos, false_neg, 0.75*((true_neg+false_neg)/(0.0+true_pos+true_neg+false_pos+false_neg)), (false_neg / (0.0+true_pos+false_neg)) )
+    true_pos,true_neg,false_pos,false_neg,frac = measure_cutoff( predictions, output, cutoff, aa_in )
+    print( '{:02.2f}'.format(cutoff), true_pos, true_neg, false_pos, false_neg, 0.75*((true_neg+false_neg)/(0.0+true_pos+true_neg+false_pos+false_neg)), (false_neg / (0.0+true_pos+false_neg)), frac )
     cutoff -= 0.05
 
 #############
