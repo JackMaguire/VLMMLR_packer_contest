@@ -45,15 +45,6 @@ tf_export(
 numpy.random.seed( 0 )
 
 
-
-#Get sha1
-pwd = os.path.realpath(__file__)
-MLHOUSE_index = pwd.find( "MLHOUSE" )
-path = pwd[:MLHOUSE_index]
-full_name = "~/MLHOUSE/.git".replace( "~", path )
-sha1 = subprocess.check_output(["git", "--git-dir", full_name, "rev-parse", "HEAD"]).strip()
-print ( "JackMaguire/MLHOUSE: " + str( sha1 ) )
-
 parser = argparse.ArgumentParser()
 parser.add_argument( "--model", help="Most recent model file", required=True )
 #parser.add_argument( "--out", help="Filename for result", required=True )
