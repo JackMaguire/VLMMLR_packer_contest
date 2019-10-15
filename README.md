@@ -18,24 +18,24 @@ python3 run.py --model my_model.h5
 python3 analyze.py --model my_model.h5
 ```
 
-#### USing other dataset
+#### Using other dataset
 ```sh
 cd VLMMLR_packer_contest
 python3 run.py --training_data data/training_data.first_block.500000.csv
 python3 analyze.py 
 ```
 
-## Options
+#### Getting more training data
 
-The master branch has 35 input values: 15 rates + 20 one-hot encoded AA data.
-Instead, you can choose to have just the 15 rate values by using the `JackMaguire/NoAAInfo` branch as your starting point
-(`git checkout JackMaguire/NoAAInfo; git checkout -b my_new_branch_name`).
+I have a larger training data set [here](https://drive.google.com/file/d/1S7Q8GGTs3fMZ2POA0j8xyqMlg0I8aQ5X/view?usp=sharing
+)
 
-Another option is to split the 35 values into two separate input layers.
-`JackMaguire/split_input` inputs the 15 rate values to `input1` and the
-20 one-hot encodings into `layer2`.
+## Submitting Results
 
-Both branches handle all of this logic for you so you shouldn't even notice a difference.
+When you are done training a model, run `score.py --model [model name]`. Don’t do this too often. Strictly speaking you shouldn’t even have access to this ability.
+
+Add your .h5 model file and your run.py file to `results/` and report the output of `score.py` in results.md. Push to master when you are done (may need to pull first).
+
 
 ## Useful links
 
